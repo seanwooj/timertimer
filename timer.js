@@ -33,12 +33,26 @@ var Timer = ( function () {
 			}, 1000)
 		}
 
+		this.loadCookieTimerData = function() {
+			if ( $.cookie("timerCreated") ) {
+				var timeSince = Math.floor(($.now() - $.cookie('timerCreated'))/1000);
+				var remainingTime = $.cookie("timerLength") - timeSince;
+
+				if (remainingTime > 0) {
+					that.startTimer(remainingTime);
+				}
+				return true;
+			}
+		}
+
 		this.start = function(timerLinkClass) {
+			$.cookie.json = true;
+			that.loadCookieTimerData();
 			$(timerLinkClass).click(function() {
 				time = $(this).attr('time-data');
 				that.startTimer(time);
 				$.cookie("timerCreated", $.now(), { expires: 999} );
-				console.log($.cookie("timerCreated"));
+				$.cookie("timerLength", time, { expires: 999} );
 			})
 		}
 
