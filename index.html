@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Timer</title>
+		<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script src="jquery-cookie.js"></script>
+		<script src="timer.js"></script>
+		<script>
+			$(function() {
+				timer = new Timer.Controller(".timer");
+				timer.start(".start-timer")
+			})
+		</script>
+
+		<style>
+			/* http://meyerweb.com/eric/tools/css/reset/ 
+			   v2.0 | 20110126
+			   License: none (public domain)
+			*/
+
+			html, body, div, span, applet, object, iframe,
+			h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+			a, abbr, acronym, address, big, cite, code,
+			del, dfn, em, img, ins, kbd, q, s, samp,
+			small, strike, strong, sub, sup, tt, var,
+			b, u, i, center,
+			dl, dt, dd, ol, ul, li,
+			fieldset, form, label, legend,
+			table, caption, tbody, tfoot, thead, tr, th, td,
+			article, aside, canvas, details, embed, 
+			figure, figcaption, footer, header, hgroup, 
+			menu, nav, output, ruby, section, summary,
+			time, mark, audio, video {
+				margin: 0;
+				padding: 0;
+				border: 0;
+				font-size: 100%;
+				font: inherit;
+				vertical-align: baseline;
+			}
+			/* HTML5 display-role reset for older browsers */
+			article, aside, details, figcaption, figure, 
+			footer, header, hgroup, menu, nav, section {
+				display: block;
+			}
+			body {
+				line-height: 1;
+			}
+			ol, ul {
+				list-style: none;
+			}
+			blockquote, q {
+				quotes: none;
+			}
+			blockquote:before, blockquote:after,
+			q:before, q:after {
+				content: '';
+				content: none;
+			}
+			table {
+				border-collapse: collapse;
+				border-spacing: 0;
+			}
+
+			.clear {
+				clear:both;
+				line-height: 0;
+			}
+		</style>
+
+
+		<style>
+			html {
+				background: url("http://www.seanwooj.in/assets/background-ee52bf6d76c1340803ed226fbff94545.jpg");
+				background-size: cover;
+			}
+
+			body {
+				font-family: "Sanchez", "Helvetica Neue", Helvetica, Arial, sans-serif;
+				margin: 0;
+				padding: 0;
+				background: url("http://www.seanwooj.in/assets/stripe1-f5ce453f311a8c94a31da28818b875f3.png");
+			}
+
+			.header {
+				background: #2ECC71;
+				border-bottom: #27AE60 5px solid;
+				min-height: 1em;
+			}
+
+			.header h1 {
+				font-size: 1.5em;
+				color: white;
+				padding: 10px;
+				float: left;
+				clear: left;
+			}
+
+			.header ul.right {
+				float: right;
+				clear: right;
+				height: 44px;
+			}
+
+			.header ul.right li {
+				float: left;
+				padding: 14px 20px 0 20px;
+				margin-right: 10px;
+				height: 30px;
+			}
+
+			.header ul.right li a {
+				color: white;
+				text-decoration: none;
+			}
+
+			.header ul.right li:hover {
+				background: #27AE60;
+			}
+
+			.timer-container {
+				background: rgba(255,255,255,0.6);
+				min-height: 100px;
+				text-align: center;
+				border-bottom: 5px solid rgba(200,200,200,0.6);
+			}
+
+			.timer {
+				font-family: "Inconsolata", monospace;
+				font-size: 10em;
+				font-weight: 700;
+				padding: 30px;
+				display: block;
+				color: #000;
+			}
+
+			.stats {
+				text-align: center;
+			}
+
+			.stats-container {
+				margin: 20px auto;
+				background: #eee;
+				padding: 20px;
+				max-width: 300px;
+				border-bottom: 5px solid #ddd;
+				border-radius: 5px;
+			}
+
+			.stats-header {
+				margin-bottom: 20px;
+				font-size: 1.2em;
+			}
+
+			.stats-table {
+
+			}
+
+			.stats-row {
+				padding: 10px;
+				background: #fff;
+				clear: both;
+				min-height: 18px;
+				margin: 5px;
+			}
+
+			.stat-key {
+				float: left;
+				clear: left;
+			}
+
+			.stat-value {
+				float: right;
+				clear: right;
+			}
+
+			.footer {
+				background: #27AE60;
+				border-top: #2ECC71 5px solid;
+				min-height: 40px;
+				position: fixed;
+				bottom: 0;
+				width: 100%;
+			}
+
+			.footer .left {
+				margin-top: 10px;
+				margin-left: 10px;
+				display: block;
+				color: white;
+				float: left;
+			}
+
+			.footer .right {
+				margin-top: 10px;
+				margin-right: 10px;
+				display: block;
+				color: white;
+				float: right;
+			}
+
+		</style>
+
+
+	</head>
+	<body>
+		<div class="header">
+			<h1>timetime</h1>
+			<ul class="right">
+				<li><a href="#" class="start-timer" time-data="1500">Pomodoro</a></li>
+				<li><a href="#" class="start-timer" time-data="300">Short Break</a></li>
+				<li><a href="#" class="start-timer" time-data="900">Long Break</a></li>
+			</ul>
+			<br class="clear">
+		</div>
+		<div class="timer-container">
+			<span class="timer">00:00</span>
+		</div>
+		<div class="stats">
+			<div class="stats-container">
+				<h3 class="stats-header">A History of Timers</h3>
+				<div class="stats-table">
+					<div class="stats-row">
+						<span class="stat-key">Timer</span>
+						<span class="stat-value">30 minutes ago</span>
+					</div>
+					<div class="stats-row">
+						<span class="stat-key">Timer</span>
+						<span class="stat-value">30 minutes ago</span>
+					</div>
+					<div class="stats-row">
+						<span class="stat-key">Timer</span>
+						<span class="stat-value">30 minutes ago</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="footer">
+			<span class="left">Designed by <a href="http://www.seanwooj.in">Sean Woojin Kim</a></span>
+			<span class="right">Get this code on <a href="#">github</a></span>
+		</div>
+	</body>
+
+	<link href='http://fonts.googleapis.com/css?family=Sanchez:400italic,400' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
+</html>
