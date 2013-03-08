@@ -4,6 +4,16 @@ var Timer = ( function () {
 		var that = this;
 		that.time = 0;
 		that.int = undefined;
+		that.data = [
+				{
+					"startedAt" : 1362699352992,
+					"type" : "Pomodoro"
+				},
+				{
+					"startedAt" : 1362699352992,
+					"type" : "Custom"
+				}
+			]
 
 		this.startTimer = function(seconds) {
 			that.time = seconds
@@ -45,15 +55,48 @@ var Timer = ( function () {
 			}
 		}
 
-		this.start = function(timerLinkClass) {
+		this.loadCookieHistory = function() {
+			$('.stats-table').empty();
+			if ( $.cookie("history") ) {
+				$.each($.cookie("history"), function(key, value) {
+					minutesAgo = Math.floor(($.now() - value.startedAt)/1000/60);
+					$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">' + minutesAgo + ' minutes ago</span></div>');
+				})
+			}
+		}
+
+		this.saveCookieHistory = function(type, startedAt) {
+			if ( $.cookie("history") ) {
+				var oldData = $.cookie("history");
+				oldData.push( { "type" : type , "startedAt": startedAt } );
+				$.cookie("history", oldData);
+			} else {
+				$.cookie("history", [ { "type" : type , "startedAt": startedAt } ]);
+			}
+			console.log($.cookie("history"));
+		}
+
+		this.start = function(timerLinkClass, customTimer) {
 			$.cookie.json = true;
 			that.loadCookieTimerData();
+			that.loadCookieHistory();
 			$(timerLinkClass).click(function() {
 				time = $(this).attr('time-data');
+				type = $(this).html();
 				that.startTimer(time);
-				$.cookie("timerCreated", $.now(), { expires: 999} );
-				$.cookie("timerLength", time, { expires: 999} );
+				$.cookie("timerCreated", $.now(), { expires: 1} );
+				$.cookie("timerLength", time, { expires: 1} );
+				that.saveCookieHistory(type, $.now());
+				that.loadCookieHistory();
 			})
+			$(customTimer).click(function() {
+				time = prompt("gimme some time")*60;
+				that.startTimer(time);
+				$.cookie("timerCreated", $.now(), { expires: 1} );
+				$.cookie("timerLength", time, { expires: 1} );
+				that.saveCookieHistory("custom", $.now());
+				that.loadCookieHistory();
+			});
 		}
 
 		this.playSound = function( url ){   
