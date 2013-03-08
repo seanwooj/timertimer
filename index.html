@@ -5,10 +5,14 @@
 		<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 		<script src="jquery-cookie.js"></script>
 		<script src="timer.js"></script>
+		<script src="modal.js"></script>
 		<script>
 			$(function() {
 				timer = new Timer.Controller(".timer");
-				timer.start(".start-timer", ".custom-timer");
+				timer.start(".start-timer");
+
+				$('.custom-timer').click(modal.open);
+				$('.close').click(modal.close);
 			})
 		</script>
 
@@ -41,6 +45,21 @@
 		<div class="footer">
 			<span class="left">Designed by <a href="http://www.seanwooj.in">Sean Woojin Kim</a></span>
 			<span class="right">Get this code on <a href="http://www.github.com/seanwooj/timertimer">github</a></span>
+		</div>
+		<div class="overlay">
+			<div class="modal">
+				<a href="#" class="close">x</a>
+				<div class="modal-content">
+					<h3>Start a timer</h3>
+					<form class="custom-timer">
+						<label>Minutes</label>
+						<input type="number" class="minutes-input"></input>
+						<label>Name of timer</label>
+						<input type="text" class="name-input"></input>
+						<input type="submit" class="button" value="make it"></input>
+					</form>
+				</div>
+			</div>
 		</div>
 	</body>
 

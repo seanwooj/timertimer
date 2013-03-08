@@ -4,16 +4,6 @@ var Timer = ( function () {
 		var that = this;
 		that.time = 0;
 		that.int = undefined;
-		that.data = [
-				{
-					"startedAt" : 1362699352992,
-					"type" : "Pomodoro"
-				},
-				{
-					"startedAt" : 1362699352992,
-					"type" : "Custom"
-				}
-			]
 
 		this.startTimer = function(seconds) {
 			that.time = seconds
@@ -84,7 +74,7 @@ var Timer = ( function () {
 			console.log($.cookie("history"));
 		}
 
-		this.start = function(timerLinkClass, customTimer) {
+		this.start = function(timerLinkClass) {
 			$.cookie.json = true;
 			that.loadCookieTimerData();
 				that.loadCookieHistory();
@@ -97,13 +87,20 @@ var Timer = ( function () {
 				that.saveCookieHistory(type, $.now());
 				that.loadCookieHistory();
 			})
-			$(customTimer).click(function() {
-				time = prompt("gimme some time")*60;
-				that.startTimer(time);
-				$.cookie("timerCreated", $.now(), { expires: 1} );
-				$.cookie("timerLength", time, { expires: 1} );
-				that.saveCookieHistory("custom", $.now());
-				that.loadCookieHistory();
+			$('.custom-timer').submit(function() {
+				time = $('input.minutes-input').val();
+				timerName = $('input.name-input').val();
+				if ( Number(time) != NaN ) {
+					that.startTimer(time * 60);
+					$.cookie("timerCreated", $.now(), { expires: 1} );
+					$.cookie("timerLength", time, { expires: 1} );
+					that.saveCookieHistory(timerName, $.now());
+					that.loadCookieHistory();
+				} else {
+					alert("that's not a number, man.")
+				}
+				modal.close();				
+				
 			});
 		}
 

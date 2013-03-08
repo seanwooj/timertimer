@@ -36,8 +36,7 @@ html, body {
 
 .header ul.right li {
 	float: left;
-	padding: 14px 20px 0 20px;
-	margin-right: 10px;
+	padding: 14px 10px 0 10px;
 	height: 30px;
 }
 
@@ -138,4 +137,74 @@ html, body {
 	display: block;
 	color: white;
 	float: right;
+}
+
+/* Overlays */
+
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.5);
+	display: none;
+}
+
+.modal {
+	display:none;
+	position: absolute;
+	background: rgba(255,255,255,0.9);
+	padding: 30px;
+	border-bottom: 5px rgba(0,0,0,0.2) solid;
+}
+
+.modal .close {
+	position: absolute;
+	display: block;
+	top: 0px;
+	right: 7px;
+	text-decoration: none;
+	color: #666;
+}
+
+.modal h3 {
+	margin-bottom: 10px;
+	font-size: 1.5em;
+}
+
+.modal label {
+	display: block;
+}
+
+.modal input {
+	font-family:"Sanchez", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	background: rgba(0,0,0,0.3);
+	border: none;
+	border-top: 5px rgba(0,0,0,0.1) solid;
+	font-size: 1.1em;
+	height: 2em;
+	padding: 0 10px 0 10px;
+	color: white;
+	margin: 10px 0;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.modal .button {
+	display: block;
+	padding: 10px;
+	height: 100%;
+	background: #2ECC71;
+	border: none;
+	border-bottom: 5px rgba(0,0,0,0.1) solid;
+	margin: 10px 0 0 0;
+}
+
+.modal .button:hover {
+	background: #27AE60;
 }
