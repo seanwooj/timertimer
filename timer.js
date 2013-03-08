@@ -59,8 +59,13 @@ var Timer = ( function () {
 			$('.stats-table').empty();
 			if ( $.cookie("history") ) {
 				$.each($.cookie("history"), function(key, value) {
-					minutesAgo = Math.floor(($.now() - value.startedAt)/1000/60);
-					$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">' + minutesAgo + ' minutes ago</span></div>');
+					timeAgo = Math.floor(($.now() - value.startedAt)/1000/60);
+					if ( timeAgo >= 60 ) {
+						timeAgo = Math.floor( timeAgo / 60 );
+						$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">about ' + timeAgo + ' hours ago</span></div>');
+					} else {
+						$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">' + timeAgo + ' minutes ago</span></div>');
+					}
 				})
 			}
 		}
@@ -68,6 +73,9 @@ var Timer = ( function () {
 		this.saveCookieHistory = function(type, startedAt) {
 			if ( $.cookie("history") ) {
 				var oldData = $.cookie("history");
+				if ( oldData.length > 5 ) {
+					oldData.shift();
+				}
 				oldData.push( { "type" : type , "startedAt": startedAt } );
 				$.cookie("history", oldData);
 			} else {
@@ -79,7 +87,7 @@ var Timer = ( function () {
 		this.start = function(timerLinkClass, customTimer) {
 			$.cookie.json = true;
 			that.loadCookieTimerData();
-			that.loadCookieHistory();
+				that.loadCookieHistory();
 			$(timerLinkClass).click(function() {
 				time = $(this).attr('time-data');
 				type = $(this).html();
