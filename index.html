@@ -13,6 +13,14 @@
 
 				$('.custom-timer').click(modal.open);
 				$('.close').click(modal.close);
+
+				$('.notify').click( function() {
+					console.log('boop');
+				  if (window.webkitNotifications.checkPermission() == 0) { // 0 is PERMISSION_ALLOWED
+				    window.webkitNotifications.requestPermission();
+				    console.log('yo');
+				  }
+				});
 			})
 		</script>
 
@@ -25,10 +33,10 @@
 		<div class="header">
 			<h1>timetimetime</h1>
 			<ul class="right">
-				<li><a href="#" class="start-timer" time-data="1500">Pomodoro</a></li>
-				<li><a href="#" class="start-timer" time-data="300">Short Break</a></li>
-				<li><a href="#" class="start-timer" time-data="900">Long Break</a></li>
-				<li><a href="#" class="custom-timer" time-data="900">Custom</a></li>
+				<li><a href="#" class="start-timer notify" time-data="1500">Pomodoro</a></li>
+				<li><a href="#" class="start-timer notify" time-data="300">Short Break</a></li>
+				<li><a href="#" class="start-timer notify" time-data="900">Long Break</a></li>
+				<li><a href="#" class="custom-timer nofify" time-data="900">Custom</a></li>
 			</ul>
 			<br class="clear">
 		</div>

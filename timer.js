@@ -27,6 +27,7 @@ var Timer = ( function () {
 				} else {
 					$(timerContainer).html("00:00");
 					$('title').html('Ding!')
+					window.webkitNotifications.createNotification("clock.png", "DING!", "Time is up!").show();
 					that.playSound("bell.wav");
 					clearInterval(that.int);
 				}
@@ -91,7 +92,8 @@ var Timer = ( function () {
 				time = $('input.minutes-input').val();
 				timerName = $('input.name-input').val();
 				if ( Number(time) != NaN ) {
-					that.startTimer(time * 60);
+					time = time * 60;
+					that.startTimer(time);
 					$.cookie("timerCreated", $.now(), { expires: 1} );
 					$.cookie("timerLength", time, { expires: 1} );
 					that.saveCookieHistory(timerName, $.now());
@@ -106,6 +108,15 @@ var Timer = ( function () {
 
 		this.playSound = function( url ){   
   		$('body').append("<embed src='"+url+"' hidden=true autostart=true loop=false>");
+
+		}
+
+		this.checkForNotificationsSupport = function() {
+			if (window.webkitNotifications) {
+				return true;
+			} else {
+				return false;
+			}
 		}
 	}
 
