@@ -113,7 +113,7 @@ var Timer = ( function () {
 
 		};
 
-		this.checkForNotificationsSupport = function() {};unction() {
+		this.checkForNotificationsSupport = function() {
 			if (window.webkitNotifications) {
 				return true;
 			} else {
