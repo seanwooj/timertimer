@@ -6,13 +6,13 @@ var Timer = ( function () {
 		that.int = undefined;
 
 		this.startTimer = function(seconds) {
-			that.time = seconds
-			if ( that.int != undefined ) {
+			that.time = seconds;
+			if ( that.int !== undefined ) {
 				clearInterval(that.int);
 			}
 			that.int = setInterval(function(){
 				if ( that.time > 0 ) {
-					that.time--
+					that.time--;
 
 					minutes = Math.floor(that.time/60);
 					seconds = that.time%60;
@@ -22,17 +22,19 @@ var Timer = ( function () {
 					if ( minutes < 10 ) {
 						minutes = "0" + minutes;
 					}
-					$(timerContainer).html(minutes + ":" + seconds)
-					$('title').html(minutes + ":" + seconds)
+					$(timerContainer).html(minutes + ":" + seconds);
+					$('title').html(minutes + ":" + seconds);
 				} else {
 					$(timerContainer).html("00:00");
-					$('title').html('Ding!')
+					$('title').html('Ding!');
+
+					//notifications 
 					window.webkitNotifications.createNotification("clock.png", "DING!", "Time is up!").show();
 					that.playSound("bell.wav");
 					clearInterval(that.int);
 				}
-			}, 1000)
-		}
+			}, 1000);
+		};
 
 		this.loadCookieTimerData = function() {
 			if ( $.cookie("timerCreated") ) {
@@ -44,7 +46,7 @@ var Timer = ( function () {
 				}
 				return true;
 			}
-		}
+		};
 
 		this.loadCookieHistory = function() {
 			$('.stats-table').empty();
@@ -57,9 +59,9 @@ var Timer = ( function () {
 					} else {
 						$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">' + timeAgo + ' minutes ago</span></div>');
 					}
-				})
+				});
 			}
-		}
+		};
 
 		this.saveCookieHistory = function(type, startedAt) {
 			if ( $.cookie("history") ) {
@@ -72,8 +74,8 @@ var Timer = ( function () {
 			} else {
 				$.cookie("history", [ { "type" : type , "startedAt": startedAt } ]);
 			}
-			console.log($.cookie("history"));
-		}
+			// console.log($.cookie("history"));
+		};
 
 		this.start = function(timerLinkClass) {
 			$.cookie.json = true;
@@ -87,11 +89,11 @@ var Timer = ( function () {
 				$.cookie("timerLength", time, { expires: 1} );
 				that.saveCookieHistory(type, $.now());
 				that.loadCookieHistory();
-			})
+			});
 			$('.custom-timer').submit(function() {
 				time = $('input.minutes-input').val();
 				timerName = $('input.name-input').val();
-				if ( Number(time) != NaN ) {
+				if ( !isNaN(Number(time)) ) {
 					time = time * 60;
 					that.startTimer(time);
 					$.cookie("timerCreated", $.now(), { expires: 1} );
@@ -99,30 +101,30 @@ var Timer = ( function () {
 					that.saveCookieHistory(timerName, $.now());
 					that.loadCookieHistory();
 				} else {
-					alert("that's not a number, man.")
+					alert("that's not a number, man.");
 				}
 				modal.close();				
 				
 			});
-		}
+		};
 
 		this.playSound = function( url ){   
-  		$('body').append("<embed src='"+url+"' hidden=true autostart=true loop=false>");
+			$('body').append("<embed src='"+url+"' hidden=true autostart=true loop=false>");
 
-		}
+		};
 
-		this.checkForNotificationsSupport = function() {
+		this.checkForNotificationsSupport = function() {};unction() {
 			if (window.webkitNotifications) {
 				return true;
 			} else {
 				return false;
 			}
-		}
-	}
+		};
+	};
 
 	return {
 		Controller: Controller
-	}
+	};
 
 } )();
 

@@ -17,8 +17,9 @@
 				$('.notify').click( function() {
 					console.log('boop');
 				  if (window.webkitNotifications.checkPermission() == 0) { // 0 is PERMISSION_ALLOWED
-				    window.webkitNotifications.requestPermission();
-				    console.log('yo');
+				    console.log('you have permission!');
+				  } else {
+				  	window.webkitNotifications.requestPermission();
 				  }
 				});
 			})
