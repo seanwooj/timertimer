@@ -9,8 +9,8 @@
     <script>
       $(function() {
         var $buttons = $(".start-timer");
-        timer = new T3.Controller($(".timer"), $buttons);
-
+        var controller = new T3.Controller($(".timer"), $buttons);
+      
         // Modal
         $('.custom-timer').on("click", modal.open);
         $('.close').on("click", modal.close);
@@ -20,6 +20,8 @@
             window.webkitNotifications.requestPermission();
           }
         });
+
+        T3.CookieLoader.initialize(controller);
       });
     </script>
 
