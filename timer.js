@@ -99,12 +99,8 @@
       "clock.png", "DING!", "Time is up!"
     ).show();
 
-    // hack to play sound
-    var $ring = $("<audio>")
-      .attr("src", "bell.wav")
-      .attr("autostart", "true")
-      .attr("loop", "false")
-      .hidden(true);
+    $("#bell-wav")[0]
+      .play();
 
     $('body').append($ring);
   };
