@@ -1,131 +1,182 @@
-var Timer = ( function () {
+(function () {
+  var T3 = window.T3 = {};
 
-	var Controller = function(timerContainer) {
-		var that = this;
-		that.time = 0;
-		that.int = undefined;
+  var Controller = T3.Controller
+    = function ($timerContainer, $buttons) {
+      this.$timerContainer = $timerContainer;
+      this.$buttons = $buttons;
 
-		this.startTimer = function(seconds) {
-			that.time = seconds;
-			if ( that.int !== undefined ) {
-				clearInterval(that.int);
-			}
-			that.int = setInterval(function(){
-				if ( that.time > 0 ) {
-					that.time--;
+      this.$buttons.on(
+        "click",
+        this.handleButtonClick.bind(this)
+      );
+      $('.custom-timer').on(
+        "submit", this.handleCustomSubmit.bind(this)
+      );
 
-					minutes = Math.floor(that.time/60);
-					seconds = that.time%60;
-					if ( seconds < 10 ) {
-						seconds = "0" + seconds;
-					}
-					if ( minutes < 10 ) {
-						minutes = "0" + minutes;
-					}
-					$(timerContainer).html(minutes + ":" + seconds);
-					$('title').html(minutes + ":" + seconds);
-				} else {
-					$(timerContainer).html("00:00");
-					$('title').html('Ding!');
+      this.secondsLeft = 0;
+      this.lastTick = undefined;
+      this.timerId = undefined;
+    };
 
-					//notifications 
-					window.webkitNotifications.createNotification("clock.png", "DING!", "Time is up!").show();
-					that.playSound("bell.wav");
-					clearInterval(that.int);
-				}
-			}, 1000);
-		};
+  Controller.prototype.handleButtonClick = function (event) {
+    var $button = $(event.currentTarget);
+    var seconds = $button.attr('data-time');
+    this.startTimer(seconds);
 
-		this.loadCookieTimerData = function() {
-			if ( $.cookie("timerCreated") ) {
-				var timeSince = Math.floor(($.now() - $.cookie('timerCreated'))/1000);
-				var remainingTime = $.cookie("timerLength") - timeSince;
+    T3.CookieLoader.registerTimer($button.html(), seconds);
+  };
 
-				if (remainingTime > 0) {
-					that.startTimer(remainingTime);
-				}
-				return true;
-			}
-		};
+  Controller.prototype.handleCustomSubmit = function (event) {
+    var $form = $(event.currentTarget);
 
-		this.loadCookieHistory = function() {
-			$('.stats-table').empty();
-			if ( $.cookie("history") ) {
-				$.each($.cookie("history"), function(key, value) {
-					timeAgo = Math.floor(($.now() - value.startedAt)/1000/60);
-					if ( timeAgo >= 60 ) {
-						timeAgo = Math.floor( timeAgo / 60 );
-						$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">about ' + timeAgo + ' hours ago</span></div>');
-					} else {
-						$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">' + timeAgo + ' minutes ago</span></div>');
-					}
-				});
-			}
-		};
+    var minutes = $form.find('input.minutes-input').val();
+    var timerName = $form.find('input.name-input').val();
 
-		this.saveCookieHistory = function(type, startedAt) {
-			if ( $.cookie("history") ) {
-				var oldData = $.cookie("history");
-				if ( oldData.length > 5 ) {
-					oldData.shift();
-				}
-				oldData.push( { "type" : type , "startedAt": startedAt } );
-				$.cookie("history", oldData);
-			} else {
-				$.cookie("history", [ { "type" : type , "startedAt": startedAt } ]);
-			}
-			// console.log($.cookie("history"));
-		};
+    if (isNaN(Number(minutes))) {
+      alert("that's not a number, man.");
+      return;
+    }
 
-		this.start = function(timerLinkClass) {
-			$.cookie.json = true;
-			that.loadCookieTimerData();
-				that.loadCookieHistory();
-			$(timerLinkClass).click(function() {
-				time = $(this).attr('time-data');
-				type = $(this).html();
-				that.startTimer(time);
-				$.cookie("timerCreated", $.now(), { expires: 1} );
-				$.cookie("timerLength", time, { expires: 1} );
-				that.saveCookieHistory(type, $.now());
-				that.loadCookieHistory();
-			});
-			$('.custom-timer').submit(function() {
-				time = $('input.minutes-input').val();
-				timerName = $('input.name-input').val();
-				if ( !isNaN(Number(time)) ) {
-					time = time * 60;
-					that.startTimer(time);
-					$.cookie("timerCreated", $.now(), { expires: 1} );
-					$.cookie("timerLength", time, { expires: 1} );
-					that.saveCookieHistory(timerName, $.now());
-					that.loadCookieHistory();
-				} else {
-					alert("that's not a number, man.");
-				}
-				modal.close();				
-				
-			});
-		};
+    var seconds = minutes * 60;
+    this.startTimer(seconds);
 
-		this.playSound = function( url ){   
-			$('body').append("<embed src='"+url+"' hidden=true autostart=true loop=false>");
+    T3.CookieLoader.registerTimer(timerName, seconds);
 
-		};
+    modal.close();
+  };
 
-		this.checkForNotificationsSupport = function() {
-			if (window.webkitNotifications) {
-				return true;
-			} else {
-				return false;
-			}
-		};
-	};
+  Controller.prototype.startTimer = function (seconds) {
+    this.secondsLeft = seconds;
+    this.lastTick = new Date().getTime();
 
-	return {
-		Controller: Controller
-	};
+    if (this.timerId !== undefined) {
+      clearInterval(this.timerId);
+    }
 
-} )();
+    this.timerId = setInterval(this.tick.bind(this), 1000);
+  };
 
-	
+  function formatTimeString (seconds) {
+    var minutes = Math.floor(seconds / 60);
+    var seconds = seconds % 60;
+
+    if (seconds < 10) {
+      seconds = "0" + seconds;
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    return minutes + ":" + seconds;
+  }
+
+  Controller.prototype.tick = function () {
+    var now = new Date().getTime();
+    var millisElapsed = now - this.lastTick;
+
+    this.lastTick = now;
+    this.secondsLeft -= Math.floor(millisElapsed / 1000);
+
+    if (this.secondsLeft <= 0 ) {
+      clearInterval(this.timerId);
+      this.ding();
+      return;
+    }
+
+    var timeString = formatTimeString(this.secondsLeft);
+    this.$timerContainer.html(timeString);
+    $('title').html(timeString);
+  };
+
+  Controller.prototype.ding = function () {
+    this.$timerContainer.html("00:00");
+    $('title').html('Ding!');
+
+    // notifications
+    window.webkitNotifications.createNotification(
+      "clock.png", "DING!", "Time is up!"
+    ).show();
+
+    $("#bell-wav")[0]
+      .play();
+
+    $('body').append($ring);
+  };
+ 
+  var CookieLoader = T3.CookieLoader = {};
+
+  CookieLoader.initialize = function (controller) {
+    this.controller = controller;
+
+    $.cookie.json = true;
+    this.maybeRestoreTimer();
+
+    this.render();
+  };
+
+  CookieLoader.maybeRestoreTimer = function () {
+    if (!$.cookie("timerCreated")) {
+      return;
+    }
+    console.log("Maybe?");
+
+    var secondsSince = Math.floor(($.now() - $.cookie('timerCreated')) / 1000);
+    var secondsRemaining = $.cookie("timerLength") - secondsSince;
+
+    if (secondsRemaining > 0) {
+      this.controller.startTimer(secondsRemaining);
+    }
+  };
+
+  CookieLoader.render = function () {
+    var cookieLoader = this;
+
+    if (!$.cookie("history")) {
+      return;
+    }
+
+    var $statsTable = $(".stats-table");
+    $statsTable.empty();
+    $.each($.cookie("history"), function (key, val) {
+      $statsTable.prepend(cookieLoader.renderTimer(val));
+    });
+  };
+
+  CookieLoader.renderTimer = function (timerEntry) {
+    var timeAgoMin = Math.floor(($.now() - timerEntry.startedAt) / 1000 / 60);
+
+    var timeStr = null;
+    if (timeAgoMin >= 60) {
+      timeStr = "about " + Math.floor(timeAgoMin / 60) + " hours ago";
+    } else {
+      timeStr = timeAgoMin + " minutes ago";
+    }
+
+    return $('<div class="stats-row"><span class="stat-key">' + timerEntry.type +'</span><span class="stat-value">' + timeStr + '</span></div>');
+  };
+
+  CookieLoader.registerTimer = function (type, seconds) {
+    $.cookie("timerCreated", $.now(), { expires: 1 } );
+    $.cookie("timerLength", seconds, { expires: 1 } );
+
+    this.saveCookieHistory(type, $.now());
+    this.render();
+  };
+
+  CookieLoader.saveCookieHistory = function (type, startedAt) {
+    if (!$.cookie("history")) {
+      $.cookie("history", [ { "type" : type , "startedAt": startedAt } ]);
+      return;
+    }
+
+    var oldData = $.cookie("history");
+    if ( oldData.length > 5 ) {
+      oldData.shift();
+    }
+
+    oldData.push({ "type" : type , "startedAt": startedAt });
+    $.cookie("history", oldData);
+  };
+})();
