@@ -1,131 +1,149 @@
-var Timer = ( function () {
+(function () {
+  var T3 = window.T3 = {};
 
-	var Controller = function(timerContainer) {
-		var that = this;
-		that.time = 0;
-		that.int = undefined;
+  var Controller = Timer.T3 = function (timerContainer) {
+    this.$timerContainer = $(timerContainer);
 
-		this.startTimer = function(seconds) {
-			that.time = seconds;
-			if ( that.int !== undefined ) {
-				clearInterval(that.int);
-			}
-			that.int = setInterval(function(){
-				if ( that.time > 0 ) {
-					that.time--;
+    this.secondsLeft = 0;
+    this.lastTick = undefined;
+    this.timerId = undefined;
+  };
 
-					minutes = Math.floor(that.time/60);
-					seconds = that.time%60;
-					if ( seconds < 10 ) {
-						seconds = "0" + seconds;
-					}
-					if ( minutes < 10 ) {
-						minutes = "0" + minutes;
-					}
-					$(timerContainer).html(minutes + ":" + seconds);
-					$('title').html(minutes + ":" + seconds);
-				} else {
-					$(timerContainer).html("00:00");
-					$('title').html('Ding!');
+  Controller.prototype.startTimer = function (seconds) {
+    this.secondsLeft = secondsLeft;
+    this.lastTick = new Date().getTime();
 
-					//notifications 
-					window.webkitNotifications.createNotification("clock.png", "DING!", "Time is up!").show();
-					that.playSound("bell.wav");
-					clearInterval(that.int);
-				}
-			}, 1000);
-		};
+    if (this.timerId !== undefined) {
+      clearInterval(this.timerId);
+    }
 
-		this.loadCookieTimerData = function() {
-			if ( $.cookie("timerCreated") ) {
-				var timeSince = Math.floor(($.now() - $.cookie('timerCreated'))/1000);
-				var remainingTime = $.cookie("timerLength") - timeSince;
+    this.timerId = setInterval(this.tick.bind(this), 1000);
+  };
 
-				if (remainingTime > 0) {
-					that.startTimer(remainingTime);
-				}
-				return true;
-			}
-		};
+  function formatTimeString = function (seconds) {
+    var minutes = Math.floor(seconds / 60);
+    var seconds = seconds % 60;
 
-		this.loadCookieHistory = function() {
-			$('.stats-table').empty();
-			if ( $.cookie("history") ) {
-				$.each($.cookie("history"), function(key, value) {
-					timeAgo = Math.floor(($.now() - value.startedAt)/1000/60);
-					if ( timeAgo >= 60 ) {
-						timeAgo = Math.floor( timeAgo / 60 );
-						$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">about ' + timeAgo + ' hours ago</span></div>');
-					} else {
-						$('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">' + timeAgo + ' minutes ago</span></div>');
-					}
-				});
-			}
-		};
+    if (seconds < 10) {
+      seconds = "0" + seconds;
+    }
 
-		this.saveCookieHistory = function(type, startedAt) {
-			if ( $.cookie("history") ) {
-				var oldData = $.cookie("history");
-				if ( oldData.length > 5 ) {
-					oldData.shift();
-				}
-				oldData.push( { "type" : type , "startedAt": startedAt } );
-				$.cookie("history", oldData);
-			} else {
-				$.cookie("history", [ { "type" : type , "startedAt": startedAt } ]);
-			}
-			// console.log($.cookie("history"));
-		};
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
 
-		this.start = function(timerLinkClass) {
-			$.cookie.json = true;
-			that.loadCookieTimerData();
-				that.loadCookieHistory();
-			$(timerLinkClass).click(function() {
-				time = $(this).attr('time-data');
-				type = $(this).html();
-				that.startTimer(time);
-				$.cookie("timerCreated", $.now(), { expires: 1} );
-				$.cookie("timerLength", time, { expires: 1} );
-				that.saveCookieHistory(type, $.now());
-				that.loadCookieHistory();
-			});
-			$('.custom-timer').submit(function() {
-				time = $('input.minutes-input').val();
-				timerName = $('input.name-input').val();
-				if ( !isNaN(Number(time)) ) {
-					time = time * 60;
-					that.startTimer(time);
-					$.cookie("timerCreated", $.now(), { expires: 1} );
-					$.cookie("timerLength", time, { expires: 1} );
-					that.saveCookieHistory(timerName, $.now());
-					that.loadCookieHistory();
-				} else {
-					alert("that's not a number, man.");
-				}
-				modal.close();				
-				
-			});
-		};
+    return minutes + ":" + seconds;
+  }
 
-		this.playSound = function( url ){   
-			$('body').append("<embed src='"+url+"' hidden=true autostart=true loop=false>");
+  Controller.prototype.tick = function () {
+    var now = new Date().getTime();
+    var millisElapsed = this.lastTick - now;
 
-		};
+    this.lastTick = now;
+    this.secondsLeft -= millisElapsed / 1000;
 
-		this.checkForNotificationsSupport = function() {
-			if (window.webkitNotifications) {
-				return true;
-			} else {
-				return false;
-			}
-		};
-	};
+    if (this.secondsLeft <= 0 ) {
+      clearInterval(this.timerId);
+      this.ding();
+      return;
+    }
 
-	return {
-		Controller: Controller
-	};
+    var timeString = formatTimeString(this.secondsLeft);
+    this.$timerContainer.html(timeString);
+    $('title').html(timeString);
+  };
 
-} )();
+  this.ding = function () {
+    this.$timerContainer.html("00:00");
+    $('title').html('Ding!');
 
-	
+    // notifications
+    window.webkitNotifications.createNotification(
+      "clock.png", "DING!", "Time is up!"
+    ).show();
+
+    // hack to play sound
+    var $ring = $("<audio>")
+      .attr("src", "bell.wav")
+      .attr("autostart", "true")
+      .attr("loop", "false")
+      .hidden(true);
+
+    $('body').append($ring);
+  };
+
+  var CookieLoader = T3.CookieLoader = function () {
+  };
+
+  CookieLoader.prototype.loadCookieTimerData = function () {
+    if ( $.cookie("timerCreated") ) {
+      var timeSince = Math.floor(($.now() - $.cookie('timerCreated'))/1000);
+      var remainingTime = $.cookie("timerLength") - timeSince;
+      
+      if (remainingTime > 0) {
+        that.startTimer(remainingTime);
+      }
+      return true;
+    }
+  };
+
+  CookieLoader.prototype.load = function () {
+    $('.stats-table').empty();
+    if ( $.cookie("history") ) {
+      $.each($.cookie("history"), function(key, value) {
+        timeAgo = Math.floor(($.now() - value.startedAt)/1000/60);
+        if ( timeAgo >= 60 ) {
+          timeAgo = Math.floor( timeAgo / 60 );
+          $('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">about ' + timeAgo + ' hours ago</span></div>');
+        } else {
+          $('.stats-table').prepend('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">' + timeAgo + ' minutes ago</span></div>');
+        }
+      });
+    }
+  };
+
+  CookieLoader.prototype.saveCookieHistory = function (type, startedAt) {
+    if ( $.cookie("history") ) {
+      var oldData = $.cookie("history");
+      if ( oldData.length > 5 ) {
+        oldData.shift();
+      }
+      oldData.push( { "type" : type , "startedAt": startedAt } );
+      $.cookie("history", oldData);
+    } else {
+      $.cookie("history", [ { "type" : type , "startedAt": startedAt } ]);
+    }
+    // console.log($.cookie("history"));
+  };
+
+  this.start = function(timerLinkClass) {
+    $.cookie.json = true;
+    that.loadCookieTimerData();
+    that.loadCookieHistory();
+    $(timerLinkClass).click(function() {
+      time = $(this).attr('time-data');
+      type = $(this).html();
+      that.startTimer(time);
+      $.cookie("timerCreated", $.now(), { expires: 1} );
+      $.cookie("timerLength", time, { expires: 1} );
+      that.saveCookieHistory(type, $.now());
+      that.loadCookieHistory();
+    });
+    $('.custom-timer').submit(function() {
+      time = $('input.minutes-input').val();
+      timerName = $('input.name-input').val();
+      if ( !isNaN(Number(time)) ) {
+        time = time * 60;
+        that.startTimer(time);
+        $.cookie("timerCreated", $.now(), { expires: 1} );
+        $.cookie("timerLength", time, { expires: 1} );
+        that.saveCookieHistory(timerName, $.now());
+        that.loadCookieHistory();
+      } else {
+        alert("that's not a number, man.");
+      }
+
+      modal.close();
+    });
+  };
+})();
