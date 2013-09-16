@@ -127,7 +127,7 @@
     console.log("Maybe?");
 
     var secondsSince = Math.floor(($.now() - $.cookie('timerCreated')) / 1000);
-    var secondsRemaining = $.cookie("timerLength") - timeSince;
+    var secondsRemaining = $.cookie("timerLength") - secondsSince;
 
     if (secondsRemaining > 0) {
       this.controller.startTimer(secondsRemaining);
@@ -148,17 +148,17 @@
     });
   };
 
-  CookieLoader.renderTimer = function (val) {
-    var timeAgoMin = Math.floor(($.now() - value.startedAt) / 1000 / 60);
+  CookieLoader.renderTimer = function (timerEntry) {
+    var timeAgoMin = Math.floor(($.now() - timerEntry.startedAt) / 1000 / 60);
 
     var timeStr = null;
-    if (timeAgo >= 60) {
-      timeStr = "about " + Math.floor(timeAgo / 60) + " hours ago";
+    if (timeAgoMin >= 60) {
+      timeStr = "about " + Math.floor(timeAgoMin / 60) + " hours ago";
     } else {
-      timeStr = timeAgo + " minutes ago";
+      timeStr = timeAgoMin + " minutes ago";
     }
 
-    return $('<div class="stats-row"><span class="stat-key">' + value.type +'</span><span class="stat-value">' + timeStr + '</span></div>');
+    return $('<div class="stats-row"><span class="stat-key">' + timerEntry.type +'</span><span class="stat-value">' + timeStr + '</span></div>');
   };
 
   CookieLoader.registerTimer = function (type, seconds) {
