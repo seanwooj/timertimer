@@ -8,21 +8,19 @@
     <script src="modal.js"></script>
     <script>
       $(function() {
-        timer = new Timer.Controller(".timer");
-        timer.start(".start-timer");
+        var $buttons = $(".start-timer");
+        timer = new T3.Controller($(".timer"), $buttons);
 
-        $('.custom-timer').click(modal.open);
-        $('.close').click(modal.close);
+        // Modal
+        $('.custom-timer').on("click", modal.open);
+        $('.close').on("click", modal.close);
 
-        $('.notify').click( function() {
-          console.log('boop');
-          if (window.webkitNotifications.checkPermission() == 0) { // 0 is PERMISSION_ALLOWED
-            console.log('you have permission!');
-          } else {
+        $('.notify').on("click", function() {
+          if (window.webkitNotifications.checkPermission() !== 0) {
             window.webkitNotifications.requestPermission();
           }
         });
-      })
+      });
     </script>
 
     <script src="mixpanel.js"></script>
@@ -38,7 +36,7 @@
         <li><a href="#" class="start-timer notify" data-time="1500">Pomodoro</a></li>
         <li><a href="#" class="start-timer notify" data-time="300">Short Break</a></li>
         <li><a href="#" class="start-timer notify" data-time="900">Long Break</a></li>
-        <li><a href="#" class="custom-timer nofify" data-time="900">Custom</a></li>
+        <li><a href="#" class="custom-timer" data-time="900">Custom</a></li>
       </ul>
       <br class="clear">
     </div>
