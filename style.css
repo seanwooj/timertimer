@@ -15,8 +15,8 @@ html, body {
 }
 
 .header {
-	background: #2ECC71;
-	border-bottom: #27AE60 5px solid;
+	background: #3E3444;
+	border-bottom: #4B4653 5px solid;
 	min-height: 1em;
 }
 
@@ -49,20 +49,28 @@ html, body {
 	background: #27AE60;
 }
 
+.timer-wrapper {
+  text-align: center;
+}
+
 .timer-container {
-	background: rgba(255,255,255,0.6);
+	background: #413044;
+  margin-top: 100px;
+  margin-left: auto;
+  margin-right: auto;
 	min-height: 100px;
 	text-align: center;
-	border-bottom: 5px solid rgba(200,200,200,0.6);
+  max-width: 500px;
+
 }
 
 .timer {
 	font-family: "Inconsolata", monospace;
-	font-size: 10em;
-	font-weight: 700;
+	font-size: 6em;
+	font-weight: 300;
 	padding: 30px;
 	display: block;
-	color: #000;
+	color: white;
 }
 
 .stats {
@@ -107,8 +115,8 @@ html, body {
 }
 
 .footer {
-	background: #27AE60;
-	border-top: #2ECC71 5px solid;
+	background: #3E3444;
+	border-top: #4B4653 5px solid;
 	min-height: 40px;
 	position: fixed;
 	bottom: 0;
