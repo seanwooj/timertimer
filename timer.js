@@ -95,12 +95,12 @@
     $('title').html('Ding!');
 
     // notifications
-    var notification = window.webkitNotifications.createNotification(
+    T3.notification = window.webkitNotifications.createNotification(
       "clock.png", "DING!", "Time is up!"
     ).show();
 
     setTimeout(function(){
-      notification.cancel();
+      T3.notification.cancel();
     }, 5000);
 
     $("#bell-wav")[0]
