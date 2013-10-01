@@ -99,7 +99,7 @@
       "clock.png", "DING!", "Time is up!"
     ).show();
 
-    setTimout(function(){
+    setTimeout(function(){
       notification.cancel();
     }, 5000);
 
