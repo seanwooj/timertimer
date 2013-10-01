@@ -95,18 +95,13 @@
     $('title').html('Ding!');
 
     // notifications
-    T3.notification = window.webkitNotifications.createNotification(
+    window.webkitNotifications.createNotification(
       "clock.png", "DING!", "Time is up!"
     ).show();
-
-    setTimeout(function(){
-      T3.notification.cancel();
-    }, 5000);
 
     $("#bell-wav")[0]
       .play();
 
-    $('body').append($ring);
   };
  
   var CookieLoader = T3.CookieLoader = {};
