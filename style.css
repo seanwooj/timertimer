@@ -15,14 +15,12 @@ html, body {
 }
 
 .header {
-	background: #3E3444;
-	border-bottom: #4B4653 5px solid;
 	min-height: 1em;
 }
 
 .header h1 {
 	font-size: 1.5em;
-	color: white;
+	color: #000;
 	padding: 10px;
 	float: left;
 	clear: left;
@@ -41,12 +39,12 @@ html, body {
 }
 
 .header ul.right li a {
-	color: white;
+	color: #000;
 	text-decoration: none;
 }
 
 .header ul.right li:hover {
-	background: #27AE60;
+	background: rgba(255,255,255,0.3);
 }
 
 .timer-wrapper {
