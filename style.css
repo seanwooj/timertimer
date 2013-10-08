@@ -75,11 +75,9 @@ html, body {
 
 .stats-container {
 	margin: 20px auto;
-	background: #eee;
+	background: rgba(255,255,255,0.6);
 	padding: 20px;
 	max-width: 300px;
-	border-bottom: 5px solid #ddd;
-	border-radius: 5px;
 }
 
 .stats-header {
@@ -94,7 +92,6 @@ html, body {
 .stats-row {
 	font-size: .8em;
 	padding: 6px;
-	background: #fff;
 	clear: both;
 	min-height: 12px;
 	margin: 5px;
